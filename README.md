@@ -1,6 +1,6 @@
 # Tricky Python Quiz
 
-Tricky Python Quiz is a frontend-only web game about Python surprises, edge cases, and tiny traps that look obvious until they are not.
+Tricky Python Quiz is a quiz game about surprising edge cases, weird outputs, and tiny traps that look obvious until they are not.
 
 Each run has 20 randomly selected multiple-choice questions. Players enter a name, answer the questions, review every answer at the end, and share a score card.
 
