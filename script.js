@@ -434,10 +434,24 @@ async function createShareImage() {
   ctx.fillText(`${percent}%`, 282, 677);
   ctx.textAlign = "left";
 
-  pill(ctx, 500, 575, 340, 72, "#34d399", "#101219");
+  const rankText = rank.title.toUpperCase();
+  const rankPill = { x: 500, y: 575, width: 390, height: 72 };
+  const rankFontSize = fitText(
+    ctx,
+    rankText,
+    rankPill.width - 56,
+    40,
+    "'Plus Jakarta Sans', sans-serif",
+    28
+  );
+  pill(ctx, rankPill.x, rankPill.y, rankPill.width, rankPill.height, "#34d399", "#101219");
   ctx.fillStyle = "#101219";
-  ctx.font = "800 40px 'Plus Jakarta Sans', sans-serif";
-  ctx.fillText(rank.title.toUpperCase(), 528, 623);
+  ctx.font = `800 ${rankFontSize}px 'Plus Jakarta Sans', sans-serif`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(rankText, rankPill.x + rankPill.width / 2, rankPill.y + rankPill.height / 2 + 1);
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
 
   ctx.font = "700 30px 'DM Mono', monospace";
   ctx.fillStyle = "#101219";
@@ -467,9 +481,9 @@ function pill(ctx, x, y, width, height, fill, stroke) {
   ctx.stroke();
 }
 
-function fitText(ctx, text, maxWidth, startSize, fontFamily) {
+function fitText(ctx, text, maxWidth, startSize, fontFamily, minSize = 44) {
   let size = startSize;
-  while (size > 44) {
+  while (size > minSize) {
     ctx.font = `${size}px ${fontFamily}`;
     if (ctx.measureText(text).width <= maxWidth) return size;
     size -= 3;
