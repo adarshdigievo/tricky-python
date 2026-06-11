@@ -7,8 +7,10 @@
   --line: rgba(248, 244, 233, 0.16);
   --hot: #ff4b5f;
   --sun: #ffd166;
+  --sun-text: #ffd166;
   --mint: #34d399;
   --aqua: #59d7ff;
+  --aqua-text: #59d7ff;
   --violet: #b088ff;
   --shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
   --radius: 8px;
@@ -21,6 +23,8 @@ body.light {
   --panel: #fff9e9;
   --panel-strong: #fff2ca;
   --line: rgba(24, 26, 32, 0.16);
+  --sun-text: #7a5200;
+  --aqua-text: #004f5f;
   --shadow: 0 22px 70px rgba(71, 51, 18, 0.22);
 }
 
@@ -188,7 +192,7 @@ main {
 }
 
 .site-footer a {
-  color: var(--sun);
+  color: var(--sun-text);
   font-weight: 800;
   text-decoration: none;
 }
@@ -278,7 +282,7 @@ main {
 .eyebrow,
 .question-meta,
 .mini-label {
-  color: var(--sun);
+  color: var(--sun-text);
   font-family: "DM Mono", monospace;
   font-size: 0.83rem;
   font-weight: 700;
@@ -435,7 +439,7 @@ main {
 
 .mini-score strong {
   grid-row: span 2;
-  color: var(--sun);
+  color: var(--sun-text);
   font-family: "Bungee", cursive;
   font-size: clamp(4.2rem, 7vw, 5.2rem);
   line-height: 0.78;
@@ -454,10 +458,10 @@ main {
   align-items: center;
   gap: 7px;
   padding: 6px 10px;
-  border: 1px solid color-mix(in srgb, var(--sun) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sun-text) 58%, transparent);
   border-radius: 999px;
-  color: var(--sun);
-  background: rgba(255, 209, 102, 0.1);
+  color: var(--sun-text);
+  background: color-mix(in srgb, var(--sun) 14%, transparent);
   font-family: "DM Mono", monospace;
   font-size: 0.77rem;
   font-weight: 700;
@@ -465,8 +469,8 @@ main {
 }
 
 .chip.alt {
-  color: var(--aqua);
-  border-color: color-mix(in srgb, var(--aqua) 60%, transparent);
+  color: var(--aqua-text);
+  border-color: color-mix(in srgb, var(--aqua-text) 58%, transparent);
   background: rgba(89, 215, 255, 0.1);
 }
 
@@ -563,7 +567,7 @@ main {
 .hud-stats strong {
   display: block;
   margin-top: 4px;
-  color: var(--sun);
+  color: var(--sun-text);
   font-size: 1.3rem;
 }
 
@@ -838,7 +842,7 @@ main {
 }
 
 .contribute-note a {
-  color: var(--sun);
+  color: var(--sun-text);
   font-weight: 900;
   text-decoration: none;
 }
