@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Tricky Python Quiz is a frontend-only quiz game based on satwikkansal/wtfpython."
+    />
+    <title>Tricky Python Quiz</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K83014S7CQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-K83014S7CQ');
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar" aria-label="Game header">
+        <a class="brand" href="#start" aria-label="Tricky Python Quiz home">
+          <span class="brand-mark">Py</span>
+          <span>
+            <span class="brand-title">Tricky Python Quiz</span>
+            <span class="brand-subtitle">20 traps per run</span>
+          </span>
+        </a>
+        <div class="topbar-actions">
+          <button class="icon-button" id="themeToggle" type="button" aria-label="Toggle lights">
+            <i class="fa-solid fa-moon icon" aria-hidden="true"></i>
+          </button>
+          <a
+            class="icon-button"
+            href="https://github.com/adarshdigievo/tricky-python"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open Tricky Python Quiz repository"
+          >
+            <i class="fa-brands fa-github icon" aria-hidden="true"></i>
+          </a>
+        </div>
+      </header>
+
+      <main>
+        <section class="screen active start-screen" id="startScreen" aria-labelledby="startTitle">
+          <div class="hero-layout">
+            <div class="hero-copy">
+              <p class="eyebrow"><i class="fa-solid fa-bolt icon" aria-hidden="true"></i> Python, but the floor is surprising</p>
+              <h1 id="startTitle">
+                <span class="wide-title">Survive the strangest Python quiz on the internet.</span>
+                <span class="mobile-title">Survive Python's weirdest traps.</span>
+              </h1>
+              <p class="hero-lede">
+                Enter your name, face 20 randomly selected WTFPython questions, and review every
+                trap at the end before sharing a score card built for friendly bragging.
+              </p>
+              <form class="start-card" id="startForm">
+                <label for="playerName">Player name</label>
+                <div class="input-row">
+                  <i class="fa-solid fa-terminal icon" aria-hidden="true"></i>
+                  <input
+                    id="playerName"
+                    name="playerName"
+                    type="text"
+                    maxlength="22"
+                    placeholder="Guido's debugger"
+                    autocomplete="nickname"
+                    required
+                  />
+                </div>
+                <button class="primary-button" type="submit">
+                  <i class="fa-solid fa-play icon" aria-hidden="true"></i>
+                  Start the chaos
+                </button>
+              </form>
+            </div>
+
+            <aside class="cabinet" aria-label="Game preview">
+              <div class="cabinet-lights">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="mini-score">
+                <span class="mini-label">Game format</span>
+                <strong>20</strong>
+                <span>questions</span>
+              </div>
+              <div class="preview-question">
+                <span class="chip">confusing by design</span>
+                <code>False == False in [False]</code>
+                <div class="preview-options">
+                  <span>True</span>
+                  <span>False</span>
+                  <span>TypeError</span>
+                  <span>Only on Fridays</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="screen game-screen" id="gameScreen" aria-labelledby="questionTitle">
+          <div class="hud">
+            <div class="hud-player">
+              <span class="avatar" id="playerAvatar">P</span>
+              <span>
+                <strong id="hudName">Player</strong>
+                <small id="hudMood">debug stance: suspicious</small>
+              </span>
+            </div>
+            <div class="hud-stats" aria-label="Game stats">
+              <div>
+                <span>score</span>
+                <strong id="scoreText">0</strong>
+              </div>
+              <div>
+                <span>streak</span>
+                <strong id="streakText">0</strong>
+              </div>
+              <div>
+                <span>question</span>
+                <strong id="questionCount">1/20</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="progress-track" aria-hidden="true">
+            <span id="progressFill"></span>
+          </div>
+
+          <article class="question-panel">
+            <div class="question-meta">
+              <span class="chip" id="difficultyChip">warm-up</span>
+              <span class="chip alt" id="tagChip">identity</span>
+            </div>
+            <h2 id="questionTitle">Question loading...</h2>
+            <pre class="code-block" id="codeBlock"><code></code></pre>
+            <div class="options-grid" id="optionsGrid" aria-label="Answer options"></div>
+            <div class="feedback" id="feedback" aria-live="polite"></div>
+          </article>
+        </section>
+
+        <section class="screen result-screen" id="resultScreen" aria-labelledby="resultTitle">
+          <div class="result-layout">
+            <div class="share-card" id="shareCard">
+              <div class="share-card-top">
+                <span class="stamp">TRICKY PYTHON QUIZ</span>
+                <span class="date" id="shareDate"></span>
+              </div>
+              <div class="share-name" id="resultName">Player</div>
+              <h2 id="resultTitle">escaped 0/20 traps</h2>
+              <div class="score-orbit">
+                <span id="resultPercent">0%</span>
+              </div>
+              <div class="share-rank" id="resultRank">Beginner</div>
+              <div class="share-footer" id="shareFooter">Play it: Tricky Python Quiz</div>
+            </div>
+
+            <div class="result-actions">
+              <p class="eyebrow"><i class="fa-solid fa-trophy icon" aria-hidden="true"></i> Final score</p>
+              <h3 id="resultHeading">Run complete</h3>
+              <p id="resultSummary"></p>
+              <p class="contribute-note">
+                Spot a bad question?
+                <a href="https://github.com/adarshdigievo/tricky-python" target="_blank" rel="noreferrer">Report it or contribute a fix on GitHub</a>.
+              </p>
+              <div class="toggle-row" role="group" aria-label="Share mode">
+                <button class="toggle-pill active" id="imageShareMode" type="button">
+                  <i class="fa-solid fa-image icon" aria-hidden="true"></i>
+                  Image
+                </button>
+                <button class="toggle-pill" id="textShareMode" type="button">
+                  <i class="fa-solid fa-font icon" aria-hidden="true"></i>
+                  Text only
+                </button>
+              </div>
+              <div class="share-actions" id="shareActions">
+                <button class="primary-button" id="nativeShare" type="button">
+                  <i class="fa-solid fa-share-nodes icon" aria-hidden="true"></i>
+                  Share result
+                </button>
+                <button class="secondary-button" id="downloadCard" type="button">
+                  <i class="fa-solid fa-download icon" aria-hidden="true"></i>
+                  Download PNG
+                </button>
+                <button class="secondary-button" id="copyText" type="button">
+                  <i class="fa-solid fa-copy icon" aria-hidden="true"></i>
+                  Copy text
+                </button>
+              </div>
+              <div class="social-row" aria-label="Social sharing links">
+                <a id="shareX" href="#" target="_blank" rel="noreferrer" aria-label="Share on X">
+                  <i class="fa-brands fa-x-twitter icon" aria-hidden="true"></i>
+                </a>
+                <a id="shareLinkedIn" href="#" target="_blank" rel="noreferrer" aria-label="Share on LinkedIn">
+                  <i class="fa-brands fa-linkedin-in icon" aria-hidden="true"></i>
+                </a>
+                <a id="shareWhatsApp" href="#" target="_blank" rel="noreferrer" aria-label="Share on WhatsApp">
+                  <i class="fa-brands fa-whatsapp icon" aria-hidden="true"></i>
+                </a>
+                <a id="shareFacebook" href="#" target="_blank" rel="noreferrer" aria-label="Share on Facebook">
+                  <i class="fa-brands fa-facebook-f icon" aria-hidden="true"></i>
+                </a>
+              </div>
+              <button class="ghost-button" id="reviewAnswers" type="button">
+                <i class="fa-solid fa-list-check icon" aria-hidden="true"></i>
+                Review answers
+              </button>
+              <button class="ghost-button" id="playAgain" type="button">
+                <i class="fa-solid fa-rotate-right icon" aria-hidden="true"></i>
+                Play another 20
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen review-screen" id="reviewScreen" aria-labelledby="reviewTitle">
+          <div class="review-header">
+            <div>
+              <p class="eyebrow"><i class="fa-solid fa-magnifying-glass icon" aria-hidden="true"></i> Post-game review</p>
+              <h2 id="reviewTitle">Every trap, unpacked.</h2>
+              <p class="review-source-note">More explanation from the original WTFPython section is linked at the end of each card.</p>
+            </div>
+            <button class="secondary-button" id="backToResults" type="button">
+              <i class="fa-solid fa-arrow-left icon" aria-hidden="true"></i>
+              Score card
+            </button>
+          </div>
+          <div class="review-list" id="reviewList"></div>
+        </section>
+      </main>
+      <footer class="site-footer">
+        <span class="source-credit">
+          Credits:
+          <a href="https://github.com/satwikkansal/wtfpython" target="_blank" rel="noreferrer">satwikkansal/wtfpython</a>
+        </span>
+        <span class="footer-divider" aria-hidden="true">/</span>
+        <span class="report-credit">
+          <a href="https://github.com/adarshdigievo/tricky-python" target="_blank" rel="noreferrer">Report bad questions or contribute</a>
+        </span>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

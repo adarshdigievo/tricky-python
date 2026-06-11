@@ -1,0 +1,1195 @@
+{
+  "meta": {
+    "title": "Tricky Python Quiz Question Bank",
+    "questionsPerGame": 20,
+    "sourceName": "satwikkansal/wtfpython",
+    "sourceUrl": "https://github.com/satwikkansal/wtfpython",
+    "note": "Questions are adapted and paraphrased from the WTFPython examples and explanations."
+  },
+  "questions": [
+    {
+      "id": "walrus-top-level",
+      "sourceSection": "First things first!",
+      "difficulty": "spicy",
+      "tag": "walrus",
+      "question": "Python 3.8+ sees this at top level. What happens?",
+      "code": "a := \"wtf_walrus\"",
+      "options": [
+        "SyntaxError, unless the assignment expression is parenthesized.",
+        "It assigns a and returns the string.",
+        "It creates a tuple containing a and the string.",
+        "NameError, because a was not defined first."
+      ],
+      "answerIndex": 0,
+      "explanation": "Unparenthesized assignment expressions are restricted at top level. `(a := \"wtf_walrus\")` is valid."
+    },
+    {
+      "id": "walrus-tuple",
+      "sourceSection": "First things first!",
+      "difficulty": "mean",
+      "tag": "walrus",
+      "question": "After this expression runs, what is the value of a?",
+      "code": "(a := 6, 9)",
+      "options": [
+        "6",
+        "(6, 9)",
+        "9",
+        "SyntaxError"
+      ],
+      "answerIndex": 0,
+      "explanation": "`(a := 6, 9)` is parsed like `((a := 6), 9)`. The expression returns a tuple, but a becomes 6."
+    },
+    {
+      "id": "string-interning-constant-fold",
+      "sourceSection": "Strings can be tricky sometimes",
+      "difficulty": "warm-up",
+      "tag": "interning",
+      "question": "In CPython, why can these two string objects have the same identity?",
+      "code": "id(\"some_string\") == id(\"some\" + \"_\" + \"string\")",
+      "options": [
+        "The compiler can fold constants and intern eligible strings.",
+        "Every string with an underscore is globally unique.",
+        "The plus operator always mutates the left string.",
+        "Identity checks call `str.__eq__` before comparing addresses."
+      ],
+      "answerIndex": 0,
+      "explanation": "Compile-time optimizations can fold literal string expressions and reuse interned immutable objects."
+    },
+    {
+      "id": "chained-comparison-false",
+      "sourceSection": "Be careful with chained operations",
+      "difficulty": "spicy",
+      "tag": "comparisons",
+      "question": "What does this chained comparison evaluate to?",
+      "code": "False == False in [False]",
+      "options": [
+        "True",
+        "False",
+        "TypeError",
+        "It depends on whether False is cached."
+      ],
+      "answerIndex": 0,
+      "explanation": "Chained comparisons act like `(False == False) and (False in [False])`, so both parts are true."
+    },
+    {
+      "id": "chained-comparison-numbers",
+      "sourceSection": "Be careful with chained operations",
+      "difficulty": "spicy",
+      "tag": "comparisons",
+      "question": "Pick the result of this expression.",
+      "code": "1 > 0 < 1",
+      "options": [
+        "True",
+        "False",
+        "0",
+        "SyntaxError"
+      ],
+      "answerIndex": 0,
+      "explanation": "Python reads it as `(1 > 0) and (0 < 1)`, not as `(1 > 0) < 1`."
+    },
+    {
+      "id": "small-int-cache",
+      "sourceSection": "How not to use `is` operator",
+      "difficulty": "classic",
+      "tag": "identity",
+      "question": "In a typical interactive CPython session, which identity surprise is expected?",
+      "code": "a = 256\nb = 256\na is b\n\nx = 257\ny = 257\nx is y",
+      "options": [
+        "256 is usually identical; 257 usually is not.",
+        "Both are always identical.",
+        "Neither is ever identical.",
+        "257 is cached, but 256 is not."
+      ],
+      "answerIndex": 0,
+      "explanation": "CPython preallocates small integers from -5 to 256. Larger values may be separate objects depending on compilation context."
+    },
+    {
+      "id": "empty-list-empty-tuple",
+      "sourceSection": "How not to use `is` operator",
+      "difficulty": "classic",
+      "tag": "identity",
+      "question": "Which pair of results is the trap?",
+      "code": "[] is []\n() is ()",
+      "options": [
+        "False, then True",
+        "True, then True",
+        "False, then False",
+        "True, then False"
+      ],
+      "answerIndex": 0,
+      "explanation": "Lists are mutable and created separately. Empty tuples are immutable and can be reused."
+    },
+    {
+      "id": "numeric-dict-key",
+      "sourceSection": "Hash brownies",
+      "difficulty": "mean",
+      "tag": "hashing",
+      "question": "What does the dictionary look like after these assignments?",
+      "code": "some_dict = {}\nsome_dict[5.0] = \"Ruby\"\nsome_dict[5] = \"Python\"\nsome_dict",
+      "options": [
+        "{5.0: \"Python\"}",
+        "{5.0: \"Ruby\", 5: \"Python\"}",
+        "{5: \"Python\"}",
+        "TypeError: ambiguous numeric key"
+      ],
+      "answerIndex": 0,
+      "explanation": "`5.0 == 5` and their hashes match, so the value is overwritten while the original key object remains."
+    },
+    {
+      "id": "complex-five",
+      "sourceSection": "Hash brownies",
+      "difficulty": "mean",
+      "tag": "hashing",
+      "question": "Why can `some_dict[5 + 0j]` find a value stored under `5` or `5.0`?",
+      "code": "5 == 5.0 == 5 + 0j\nhash(5) == hash(5.0) == hash(5 + 0j)",
+      "options": [
+        "Equal numeric values across these types must hash the same.",
+        "Dictionaries convert every numeric key to complex.",
+        "Complex numbers are secretly strings in dictionaries.",
+        "The lookup scans every key and ignores hashes."
+      ],
+      "answerIndex": 0,
+      "explanation": "Python dictionaries use equality and hashes for keys. These numeric objects are distinct but equivalent as keys."
+    },
+    {
+      "id": "id-reuse-lifetime",
+      "sourceSection": "Deep down, we're all the same.",
+      "difficulty": "spicy",
+      "tag": "identity",
+      "question": "How can this be true in CPython?",
+      "code": "class WTF: pass\nid(WTF()) == id(WTF())",
+      "options": [
+        "The first temporary object dies, and its memory address may be reused.",
+        "All instances of an empty class share one permanent id.",
+        "`id()` compares class names, not memory identity.",
+        "The expression is optimized into `True` before running."
+      ],
+      "answerIndex": 0,
+      "explanation": "Object ids are unique only during an object's lifetime. Temporary objects can be destroyed before the next one is created."
+    },
+    {
+      "id": "ordereddict-equality",
+      "sourceSection": "Disorder within order",
+      "difficulty": "nightmare",
+      "tag": "equality",
+      "question": "Which statement best explains this equality weirdness?",
+      "code": "dict({1: 'a', 2: 'b'}) == OrderedDict([(2, 'b'), (1, 'a')])\nOrderedDict([(1, 'a'), (2, 'b')]) == OrderedDict([(2, 'b'), (1, 'a')])",
+      "options": [
+        "OrderedDict-to-OrderedDict equality is order-sensitive; mapping equality with dict is not.",
+        "OrderedDict never compares equal to dict.",
+        "Regular dicts are always sorted before comparison.",
+        "The answer depends on hash randomization."
+      ],
+      "answerIndex": 0,
+      "explanation": "OrderedDict preserves order for comparisons with another OrderedDict, but compares like a mapping against regular dicts."
+    },
+    {
+      "id": "finally-return-wins",
+      "sourceSection": "Keep trying...",
+      "difficulty": "mean",
+      "tag": "finally",
+      "question": "What does this function return?",
+      "code": "def some_func():\n    try:\n        return \"from_try\"\n    finally:\n        return \"from_finally\"\n\nsome_func()",
+      "options": [
+        "\"from_finally\"",
+        "\"from_try\"",
+        "None",
+        "RuntimeError"
+      ],
+      "answerIndex": 0,
+      "explanation": "The finally block runs on the way out, and its return is the last return executed."
+    },
+    {
+      "id": "finally-break-discard",
+      "sourceSection": "Keep trying...",
+      "difficulty": "nightmare",
+      "tag": "finally",
+      "question": "What happens when a `finally` block executes `break` while an exception is being handled?",
+      "code": "try:\n    try:\n        1 / 0\n    finally:\n        break\nexcept ZeroDivisionError:\n    print(\"caught\")",
+      "options": [
+        "The saved exception can be discarded by the break.",
+        "The except block always runs first.",
+        "The break is illegal inside finally.",
+        "Python retries the try block once."
+      ],
+      "answerIndex": 0,
+      "explanation": "A return, break, or continue in finally can override the pending control flow, including a temporarily saved exception."
+    },
+    {
+      "id": "for-target-dict",
+      "sourceSection": "For what?",
+      "difficulty": "spicy",
+      "tag": "loops",
+      "question": "What dictionary appears after this loop?",
+      "code": "some_string = \"wtf\"\nsome_dict = {}\nfor i, some_dict[i] in enumerate(some_string):\n    i = 10\nsome_dict",
+      "options": [
+        "{0: \"w\", 1: \"t\", 2: \"f\"}",
+        "{10: \"f\"}",
+        "{0: \"w\", 10: \"t\"}",
+        "SyntaxError"
+      ],
+      "answerIndex": 0,
+      "explanation": "The for target is an assignment target. Each `(index, char)` pair assigns into `i` and then `some_dict[i]`."
+    },
+    {
+      "id": "generator-condition-runtime",
+      "sourceSection": "Evaluation time discrepancy",
+      "difficulty": "nightmare",
+      "tag": "generators",
+      "question": "What does the generator produce?",
+      "code": "array = [1, 8, 15]\ngen = (x for x in array if array.count(x) > 0)\narray = [2, 8, 22]\nlist(gen)",
+      "options": [
+        "[8]",
+        "[1, 8, 15]",
+        "[2, 8, 22]",
+        "[]"
+      ],
+      "answerIndex": 0,
+      "explanation": "The outer iterable is captured early, but the `if` clause reads the later value of `array` at runtime."
+    },
+    {
+      "id": "generator-outermost-for",
+      "sourceSection": "Evaluation time discrepancy",
+      "difficulty": "nightmare",
+      "tag": "generators",
+      "question": "Why do the later `array_4` values show up here?",
+      "code": "array_3 = [1, 2, 3]\narray_4 = [10, 20, 30]\ngen = (i + j for i in array_3 for j in array_4)\narray_3 = [4, 5, 6]\narray_4 = [400, 500, 600]\nlist(gen)",
+      "options": [
+        "Only the outermost for-expression is evaluated immediately.",
+        "Both arrays are copied when the generator is declared.",
+        "Generator expressions always use the newest value for every variable.",
+        "The addition operator delays both operands equally."
+      ],
+      "answerIndex": 0,
+      "explanation": "PEP 289 behavior: the outermost iterable is bound immediately; inner iterables are deferred until the generator runs."
+    },
+    {
+      "id": "is-not-not-is",
+      "sourceSection": "`is not ...` is not `is (not ...)`",
+      "difficulty": "classic",
+      "tag": "identity",
+      "question": "Which pair is correct?",
+      "code": "\"something\" is not None\n\"something\" is (not None)",
+      "options": [
+        "True, then False",
+        "False, then False",
+        "True, then True",
+        "SyntaxError, then True"
+      ],
+      "answerIndex": 0,
+      "explanation": "`is not` is a single operator. `(not None)` is True, so the second line checks whether the string is True."
+    },
+    {
+      "id": "tic-tac-toe-alias",
+      "sourceSection": "A tic-tac-toe where X wins in the first attempt!",
+      "difficulty": "classic",
+      "tag": "mutability",
+      "question": "After setting `board[0][0] = \"X\"`, what does the board look like?",
+      "code": "row = [\"\"] * 3\nboard = [row] * 3\nboard[0][0] = \"X\"",
+      "options": [
+        "[[\"X\", \"\", \"\"], [\"X\", \"\", \"\"], [\"X\", \"\", \"\"]]",
+        "[[\"X\", \"\", \"\"], [\"\", \"\", \"\"], [\"\", \"\", \"\"]]",
+        "[[\"X\", \"X\", \"X\"], [\"\", \"\", \"\"], [\"\", \"\", \"\"]]",
+        "TypeError: row is shared"
+      ],
+      "answerIndex": 0,
+      "explanation": "Multiplying a list of lists repeats references to the same inner row, so every row changes together."
+    },
+    {
+      "id": "closure-loop-late-binding",
+      "sourceSection": "Schrödinger's variable",
+      "difficulty": "mean",
+      "tag": "closures",
+      "question": "What does `funcs_results` become?",
+      "code": "funcs = []\nfor x in range(7):\n    def some_func():\n        return x\n    funcs.append(some_func)\nfuncs_results = [func() for func in funcs]",
+      "options": [
+        "[6, 6, 6, 6, 6, 6, 6]",
+        "[0, 1, 2, 3, 4, 5, 6]",
+        "[1, 2, 3, 4, 5, 6, 7]",
+        "NameError: x is gone"
+      ],
+      "answerIndex": 0,
+      "explanation": "The functions close over the variable, not a snapshot of its value. They read x after the loop ends."
+    },
+    {
+      "id": "lambda-power-late-binding",
+      "sourceSection": "Schrödinger's variable",
+      "difficulty": "mean",
+      "tag": "closures",
+      "question": "What does this list contain?",
+      "code": "powers_of_x = [lambda x: x ** i for i in range(10)]\n[f(2) for f in powers_of_x]",
+      "options": [
+        "Ten copies of 512",
+        "[1, 2, 4, 8, 16, 32, 64, 128, 256, 512]",
+        "Ten copies of 2",
+        "TypeError: lambda captured i"
+      ],
+      "answerIndex": 0,
+      "explanation": "Every lambda sees the final loop value i = 9, so each computes 2 ** 9."
+    },
+    {
+      "id": "subclass-intransitive",
+      "sourceSection": "Subclass relationships",
+      "difficulty": "nightmare",
+      "tag": "classes",
+      "question": "Which odd-looking trio is true?",
+      "code": "issubclass(list, object)\nissubclass(object, Hashable)\nissubclass(list, Hashable)",
+      "options": [
+        "True, True, False",
+        "True, True, True",
+        "False, True, False",
+        "True, False, True"
+      ],
+      "answerIndex": 0,
+      "explanation": "Subclass checks can be customized. Hashable checks look for a usable `__hash__`; object has one, list does not."
+    },
+    {
+      "id": "classmethod-identity",
+      "sourceSection": "Methods equality and identity",
+      "difficulty": "spicy",
+      "tag": "descriptors",
+      "question": "For a classmethod accessed twice on the same class, what is the surprise?",
+      "code": "SomeClass.classm is SomeClass.classm\nSomeClass.classm == SomeClass.classm",
+      "options": [
+        "False, then True",
+        "True, then True",
+        "False, then False",
+        "True, then False"
+      ],
+      "answerIndex": 0,
+      "explanation": "Classmethods are descriptors that create fresh bound method objects. They can compare equal without being identical."
+    },
+    {
+      "id": "staticmethod-identity",
+      "sourceSection": "Methods equality and identity",
+      "difficulty": "classic",
+      "tag": "descriptors",
+      "question": "Why is `SomeClass.staticm is SomeClass.staticm` true?",
+      "code": "class SomeClass:\n    @staticmethod\n    def staticm():\n        pass",
+      "options": [
+        "staticmethod returns the underlying function as-is.",
+        "staticmethod memoizes bound methods per class.",
+        "All methods in Python are singletons.",
+        "The comparison is converted into equality."
+      ],
+      "answerIndex": 0,
+      "explanation": "A staticmethod is a no-op descriptor for this purpose, so no fresh bound method object is created."
+    },
+    {
+      "id": "all-empty-list",
+      "sourceSection": "All-true-ation",
+      "difficulty": "classic",
+      "tag": "truthiness",
+      "question": "Which output sequence is correct?",
+      "code": "all([])\nall([[]])\nall([[[]]])",
+      "options": [
+        "True, False, True",
+        "False, False, True",
+        "True, True, False",
+        "False, True, False"
+      ],
+      "answerIndex": 0,
+      "explanation": "`all([])` is vacuously true. `[[]]` contains a falsy empty list. `[[[]]]` contains a non-empty list."
+    },
+    {
+      "id": "raw-string-ending",
+      "sourceSection": "Strings and the backslashes",
+      "difficulty": "mean",
+      "tag": "strings",
+      "question": "What happens here?",
+      "code": "r\"\\\"",
+      "options": [
+        "SyntaxError, because the raw string cannot end with a lone backslash.",
+        "It creates a one-character string containing a backslash.",
+        "It creates a two-character string: backslash and quote.",
+        "It evaluates to an empty string."
+      ],
+      "answerIndex": 0,
+      "explanation": "Even in raw strings, the parser still needs a closing quote. The final backslash escapes it."
+    },
+    {
+      "id": "not-knot",
+      "sourceSection": "not knot!",
+      "difficulty": "spicy",
+      "tag": "precedence",
+      "question": "Which pair is correct?",
+      "code": "x = True\ny = False\nnot x == y\nx == not y",
+      "options": [
+        "True, then SyntaxError",
+        "False, then True",
+        "True, then True",
+        "SyntaxError, then SyntaxError"
+      ],
+      "answerIndex": 0,
+      "explanation": "`not x == y` means `not (x == y)`. `x == not y` does not parse the way people expect."
+    },
+    {
+      "id": "bool-is-int",
+      "sourceSection": "What's wrong with booleans?",
+      "difficulty": "classic",
+      "tag": "booleans",
+      "question": "What does this print-like behavior reveal?",
+      "code": "\"wtf\" * True\n\"wtf\" * False",
+      "options": [
+        "\"wtf\", then \"\" because bool is a subclass of int.",
+        "\"True\", then \"False\" because strings coerce booleans.",
+        "TypeError both times.",
+        "\"wtfTrue\", then \"wtfFalse\"."
+      ],
+      "answerIndex": 0,
+      "explanation": "True behaves like 1 and False behaves like 0 because bool subclasses int."
+    },
+    {
+      "id": "class-instance-list-plus-equals",
+      "sourceSection": "Class attributes and instance attributes",
+      "difficulty": "mean",
+      "tag": "attributes",
+      "question": "Why do different instances end up sharing `another_list`?",
+      "code": "class SomeClass:\n    another_list = [5]\n    def __init__(self, x):\n        self.another_list += [x]",
+      "options": [
+        "`+=` mutates the class-level list in place.",
+        "`+=` always creates a fresh list on the instance.",
+        "Class attributes are deep-copied into every instance.",
+        "Lists inside classes are immutable."
+      ],
+      "answerIndex": 0,
+      "explanation": "The in-place list update changes the shared class attribute, so later instances see earlier mutations."
+    },
+    {
+      "id": "nan-list-reflexivity",
+      "sourceSection": "Nan-reflexivity",
+      "difficulty": "nightmare",
+      "tag": "nan",
+      "question": "Which result pair is correct for one NaN object?",
+      "code": "x = float(\"nan\")\nx == x\n[x] == [x]",
+      "options": [
+        "False, then True",
+        "False, then False",
+        "True, then False",
+        "True, then True"
+      ],
+      "answerIndex": 0,
+      "explanation": "NaN is not equal to itself, but list comparison first notices identical contained objects."
+    },
+    {
+      "id": "tuple-list-plus-equals",
+      "sourceSection": "Mutating the immutable!",
+      "difficulty": "nightmare",
+      "tag": "tuples",
+      "question": "What happens after the `+=` line?",
+      "code": "another_tuple = ([1, 2], [3, 4], [5, 6])\nanother_tuple[2] += [99, 999]\nanother_tuple",
+      "options": [
+        "A TypeError is raised, but the inner list was already mutated.",
+        "No error; the tuple simply changes.",
+        "TypeError and no mutation happens.",
+        "The tuple is converted into a list."
+      ],
+      "answerIndex": 0,
+      "explanation": "`+=` mutates the inner list first, then tuple item assignment fails. The side effect remains."
+    },
+    {
+      "id": "recursive-assignment",
+      "sourceSection": "Let's see if you can guess this?",
+      "difficulty": "nightmare",
+      "tag": "assignment",
+      "question": "What structure does this produce?",
+      "code": "a, b = a[b] = {}, 5\na",
+      "options": [
+        "{5: ({...}, 5)}",
+        "{5: 5}",
+        "({}, 5)",
+        "NameError: a is used before assignment"
+      ],
+      "answerIndex": 0,
+      "explanation": "The right side is evaluated first, then assigned left to right, creating a circular reference through `a[b]`."
+    },
+    {
+      "id": "int-string-limit",
+      "sourceSection": "Exceeds the limit for integer string conversion",
+      "difficulty": "spicy",
+      "tag": "versions",
+      "question": "What changed in newer Python bugfix releases for giant int-string conversions?",
+      "code": "int(\"2\" * 5432)",
+      "options": [
+        "It can raise ValueError due to the integer string conversion digit limit.",
+        "It always returns infinity.",
+        "It silently truncates the string to 4300 digits.",
+        "It returns a Decimal instead of int."
+      ],
+      "answerIndex": 0,
+      "explanation": "Recent Python versions include a default digit limit for converting between very large integers and strings."
+    },
+    {
+      "id": "dict-while-iterating",
+      "sourceSection": "Modifying a dictionary while iterating over it",
+      "difficulty": "spicy",
+      "tag": "dicts",
+      "question": "The old WTFPython example where a dict is edited during iteration runs eight times in some versions. What's the real lesson?",
+      "code": "x = {0: None}\nfor i in x:\n    del x[i]\n    x[i + 1] = None\n    print(i)",
+      "options": [
+        "Editing a dictionary while iterating is unsupported and version-dependent.",
+        "Dictionaries are designed to self-heal after eight edits.",
+        "Deleting and inserting the same number of keys is always safe.",
+        "The loop count is guaranteed by the language spec."
+      ],
+      "answerIndex": 0,
+      "explanation": "That behavior was an implementation detail tied to resizing. Mutating dicts while iterating is not supported."
+    },
+    {
+      "id": "del-not-destructor",
+      "sourceSection": "Stubborn `del` operation",
+      "difficulty": "classic",
+      "tag": "objects",
+      "question": "What does `del x` actually do first?",
+      "code": "x = SomeClass()\ny = x\ndel x",
+      "options": [
+        "It removes the name `x` and decrements the referenced object's refcount.",
+        "It always calls `x.__del__()` immediately.",
+        "It deletes every alias to the same object.",
+        "It converts the object into None."
+      ],
+      "answerIndex": 0,
+      "explanation": "`__del__` runs only when the object is actually being destroyed, not merely when one name is removed."
+    },
+    {
+      "id": "unboundlocal-assignment",
+      "sourceSection": "The out of scope variable",
+      "difficulty": "mean",
+      "tag": "scope",
+      "question": "Why does `another_func()` fail?",
+      "code": "a = 1\n\ndef another_func():\n    a += 1\n    return a\n\nanother_func()",
+      "options": [
+        "Assignment makes `a` local, so it is read before local initialization.",
+        "Integers cannot be incremented inside functions.",
+        "Global variables are invisible inside functions.",
+        "`+=` is banned in nested scopes."
+      ],
+      "answerIndex": 0,
+      "explanation": "Any assignment to a name inside a function makes it local unless declared global or nonlocal."
+    },
+    {
+      "id": "list-delete-skip",
+      "sourceSection": "Deleting a list item while iterating",
+      "difficulty": "classic",
+      "tag": "lists",
+      "question": "Why can deleting from a list while iterating leave every alternate element?",
+      "code": "some_list = [1, 2, 3, 4]\nfor item in some_list:\n    some_list.remove(item)\nsome_list",
+      "options": [
+        "The iterator advances by index while removals shift later items left.",
+        "remove() only deletes odd numbers.",
+        "The list iterator snapshots only even indexes.",
+        "Python refuses to remove the final element."
+      ],
+      "answerIndex": 0,
+      "explanation": "After removing the current item, the next item shifts into its index and gets skipped by the next iteration."
+    },
+    {
+      "id": "lossy-zip",
+      "sourceSection": "Lossy zip of iterators",
+      "difficulty": "nightmare",
+      "tag": "iterators",
+      "question": "Where did `3` go?",
+      "code": "numbers = list(range(7))\nfirst_three, remaining = numbers[:3], numbers[3:]\nnumbers_iter = iter(numbers)\nlist(zip(numbers_iter, first_three))\nlist(zip(numbers_iter, remaining))",
+      "options": [
+        "zip consumed 3 while discovering the shorter iterable was exhausted, then discarded it.",
+        "zip sorts both inputs and drops duplicate values.",
+        "range(7) never contains 3 in an iterator.",
+        "The first zip call rewinds the iterator."
+      ],
+      "answerIndex": 0,
+      "explanation": "When one iterable ends, `zip` stops and discards any values already pulled for that unfinished tuple."
+    },
+    {
+      "id": "loop-variable-leaks",
+      "sourceSection": "Loop variables leaking out!",
+      "difficulty": "classic",
+      "tag": "scope",
+      "question": "After a normal for loop at module level, what happens to the loop variable?",
+      "code": "for x in range(7):\n    pass\nx",
+      "options": [
+        "It remains bound to 6 in the surrounding scope.",
+        "It is deleted automatically.",
+        "It becomes None.",
+        "It raises NameError in Python 3."
+      ],
+      "answerIndex": 0,
+      "explanation": "Python for-loops use the scope they are in and leave the loop variable bound afterward."
+    },
+    {
+      "id": "list-comprehension-no-leak-py3",
+      "sourceSection": "Loop variables leaking out!",
+      "difficulty": "spicy",
+      "tag": "scope",
+      "question": "In Python 3, what is x after this?",
+      "code": "x = 1\n[x for x in range(5)]\nx",
+      "options": [
+        "1",
+        "4",
+        "0",
+        "NameError"
+      ],
+      "answerIndex": 0,
+      "explanation": "Python 3 list comprehensions have their own scope, so the outer x is preserved."
+    },
+    {
+      "id": "mutable-default-argument",
+      "sourceSection": "Beware of default mutable arguments!",
+      "difficulty": "classic",
+      "tag": "defaults",
+      "question": "What does the second no-argument call return?",
+      "code": "def some_func(default_arg=[]):\n    default_arg.append(\"some_string\")\n    return default_arg\n\nsome_func()\nsome_func()",
+      "options": [
+        "[\"some_string\", \"some_string\"]",
+        "[\"some_string\"]",
+        "[]",
+        "TypeError: mutable default"
+      ],
+      "answerIndex": 0,
+      "explanation": "Default argument objects are created once when the function is defined, not fresh on every call."
+    },
+    {
+      "id": "except-comma",
+      "sourceSection": "Catching the Exceptions",
+      "difficulty": "spicy",
+      "tag": "exceptions",
+      "question": "What is the modern correct way to catch either exception and keep the exception object?",
+      "code": "try:\n    some_list.remove(4)\nexcept ???:\n    print(\"Caught\")",
+      "options": [
+        "except (IndexError, ValueError) as e:",
+        "except IndexError, ValueError:",
+        "except IndexError or ValueError as e:",
+        "except [IndexError, ValueError] as e:"
+      ],
+      "answerIndex": 0,
+      "explanation": "Multiple exception types go in a tuple, and Python 3 uses `as` to bind the exception object."
+    },
+    {
+      "id": "plus-vs-plus-equals-list",
+      "sourceSection": "Same operands, different story!",
+      "difficulty": "classic",
+      "tag": "mutability",
+      "question": "Why does `b` change in the second version but not the first?",
+      "code": "a = [1, 2, 3, 4]\nb = a\na = a + [5]\n\nc = [1, 2, 3, 4]\nd = c\nc += [5]",
+      "options": [
+        "`+` creates a new list; `+=` extends the existing list in place.",
+        "`+` mutates in place; `+=` always creates a new list.",
+        "Both always mutate aliases.",
+        "Both always leave aliases unchanged."
+      ],
+      "answerIndex": 0,
+      "explanation": "Lists implement in-place addition for `+=`, while `a = a + ...` rebinds a to a new list."
+    },
+    {
+      "id": "class-scope-comprehension",
+      "sourceSection": "Name resolution ignoring class scope",
+      "difficulty": "nightmare",
+      "tag": "scope",
+      "question": "In Python 3, what is the first value of `SomeClass.y`?",
+      "code": "x = 5\nclass SomeClass:\n    x = 17\n    y = [x for i in range(10)]\n\nSomeClass.y[0]",
+      "options": [
+        "5",
+        "17",
+        "NameError",
+        "None"
+      ],
+      "answerIndex": 0,
+      "explanation": "Scopes nested inside a class definition do not read names bound in the class body. Python 3 comprehensions have their own scope."
+    },
+    {
+      "id": "bankers-rounding",
+      "sourceSection": "Rounding like a banker",
+      "difficulty": "classic",
+      "tag": "rounding",
+      "question": "What does Python 3 return?",
+      "code": "round(2.5)",
+      "options": [
+        "2",
+        "3",
+        "2.5",
+        "ValueError"
+      ],
+      "answerIndex": 0,
+      "explanation": "Python 3 uses banker's rounding: halves round to the nearest even number."
+    },
+    {
+      "id": "conditional-expression-comma",
+      "sourceSection": "Needles in a Haystack",
+      "difficulty": "mean",
+      "tag": "tuples",
+      "question": "What are x and y?",
+      "code": "x, y = (0, 1) if True else None, None\nx, y",
+      "options": [
+        "((0, 1), None)",
+        "(0, 1)",
+        "(0, None)",
+        "SyntaxError"
+      ],
+      "answerIndex": 0,
+      "explanation": "The comma sits outside the conditional expression. Parenthesize the else pair to get the intended unpacking."
+    },
+    {
+      "id": "single-item-tuple",
+      "sourceSection": "Needles in a Haystack",
+      "difficulty": "warm-up",
+      "tag": "tuples",
+      "question": "What does this loop print over?",
+      "code": "t = (\"one\")\nfor i in t:\n    print(i)",
+      "options": [
+        "The characters o, n, e",
+        "The single item \"one\"",
+        "Nothing, because parentheses make an empty tuple",
+        "TypeError: tuple required"
+      ],
+      "answerIndex": 0,
+      "explanation": "A one-item tuple needs a comma: `(\"one\",)`. Without it, this is just a string in parentheses."
+    },
+    {
+      "id": "implicit-string-concat-list",
+      "sourceSection": "Needles in a Haystack",
+      "difficulty": "spicy",
+      "tag": "strings",
+      "question": "Why does this list have 9 items instead of 10?",
+      "code": "[\"some\", \"very\", \"big\", \"list\", \"that\" \"consists\", \"of\", \"exactly\", \"ten\", \"words\"]",
+      "options": [
+        "Adjacent string literals are implicitly concatenated.",
+        "Python starts list indexes at 1.",
+        "The word \"ten\" is ignored by the parser.",
+        "Lists cannot contain more than 9 strings."
+      ],
+      "answerIndex": 0,
+      "explanation": "The missing comma makes `\"that\" \"consists\"` become one string: `\"thatconsists\"`."
+    },
+    {
+      "id": "assert-tuple-trap",
+      "sourceSection": "Needles in a Haystack",
+      "difficulty": "mean",
+      "tag": "assert",
+      "question": "Why does this not raise an AssertionError?",
+      "code": "a = \"python\"\nb = \"javascript\"\nassert(a == b, \"Both languages are different\")",
+      "options": [
+        "It asserts a non-empty tuple, which is truthy.",
+        "assert ignores strings in parentheses.",
+        "Python considers those language names equal.",
+        "Assertion failures are disabled unless imported."
+      ],
+      "answerIndex": 0,
+      "explanation": "The parentheses create a tuple containing the comparison and message. Non-empty tuples are truthy."
+    },
+    {
+      "id": "append-update-none",
+      "sourceSection": "Needles in a Haystack",
+      "difficulty": "classic",
+      "tag": "mutability",
+      "question": "What do these variables become?",
+      "code": "some_list = [1, 2, 3]\nsome_dict = {\"key_1\": 1}\nsome_list = some_list.append(4)\nsome_dict = some_dict.update({\"key_2\": 2})",
+      "options": [
+        "Both become None.",
+        "The list becomes [1,2,3,4] and dict becomes updated.",
+        "Only the dict becomes None.",
+        "Both raise TypeError."
+      ],
+      "answerIndex": 0,
+      "explanation": "In-place mutating methods like append and update usually return None."
+    },
+    {
+      "id": "split-empty-string",
+      "sourceSection": "Splitsies",
+      "difficulty": "classic",
+      "tag": "strings",
+      "question": "Which pair is correct?",
+      "code": "\"\".split()\n\"\".split(\" \")",
+      "options": [
+        "[], then [\"\"]",
+        "[\"\"], then []",
+        "[], then []",
+        "[\"\"], then [\"\"]"
+      ],
+      "answerIndex": 0,
+      "explanation": "With no separator, runs of whitespace are collapsed and empty results are dropped. With an explicit separator, empty fields remain."
+    },
+    {
+      "id": "wild-import-underscore",
+      "sourceSection": "Wild imports",
+      "difficulty": "classic",
+      "tag": "imports",
+      "question": "What does `from module import *` skip by default?",
+      "code": "def some_weird_name_func_(): pass\ndef _another_weird_name_func(): pass",
+      "options": [
+        "Names beginning with a single underscore.",
+        "Names ending with an underscore.",
+        "All functions with long names.",
+        "Every name unless `__all__` is absent."
+      ],
+      "answerIndex": 0,
+      "explanation": "Wildcard imports do not import leading-underscore names unless the module's `__all__` says otherwise."
+    },
+    {
+      "id": "sorted-reversed-consumed",
+      "sourceSection": "All sorted?",
+      "difficulty": "mean",
+      "tag": "iterators",
+      "question": "Why can this comparison be false?",
+      "code": "x = (7, 8, 9)\ny = reversed(x)\nsorted(y) == sorted(y)",
+      "options": [
+        "The first sorted call consumes the reversed iterator.",
+        "sorted returns tuples for reversed objects.",
+        "The reversed iterator randomizes order each time.",
+        "Tuple values cannot be sorted twice."
+      ],
+      "answerIndex": 0,
+      "explanation": "Iterators are consumed. The second `sorted(y)` sees no remaining values."
+    },
+    {
+      "id": "sorted-list-vs-tuple",
+      "sourceSection": "All sorted?",
+      "difficulty": "warm-up",
+      "tag": "iterators",
+      "question": "Why is this false?",
+      "code": "x = 7, 8, 9\nsorted(x) == x",
+      "options": [
+        "sorted returns a list, and x is a tuple.",
+        "sorted reverses tuples by default.",
+        "Tuples cannot be compared with lists in Python.",
+        "The tuple is mutated before comparison."
+      ],
+      "answerIndex": 0,
+      "explanation": "`sorted` always returns a list. The values match, but the types differ."
+    },
+    {
+      "id": "midnight-time",
+      "sourceSection": "Midnight time doesn't exist?",
+      "difficulty": "spicy",
+      "tag": "datetime",
+      "question": "In Python versions before 3.5, why could midnight fail an `if midnight_time:` check?",
+      "code": "midnight_time = datetime(2018, 1, 1, 0, 0).time()\nif midnight_time:\n    print(\"midnight\")",
+      "options": [
+        "A midnight time object could be considered falsey.",
+        "datetime.time objects were never allowed in if statements.",
+        "Midnight was represented as None.",
+        "The time zone database deleted midnight."
+      ],
+      "answerIndex": 0,
+      "explanation": "Older Python versions considered `datetime.time(0, 0)` falsey, which made truth checks misleading."
+    },
+    {
+      "id": "antigravity",
+      "sourceSection": "Okay Python, Can you make me fly?",
+      "difficulty": "warm-up",
+      "tag": "easter egg",
+      "question": "What is the famous effect of this import?",
+      "code": "import antigravity",
+      "options": [
+        "It opens the classic XKCD Python comic in a browser.",
+        "It enables floating point arithmetic.",
+        "It installs NumPy automatically.",
+        "It reverses comparison operators."
+      ],
+      "answerIndex": 0,
+      "explanation": "`antigravity` is a Python easter egg that points to the XKCD comic about Python."
+    },
+    {
+      "id": "future-braces",
+      "sourceSection": "Brace yourself!",
+      "difficulty": "warm-up",
+      "tag": "easter egg",
+      "question": "What does Python say to this future import?",
+      "code": "from __future__ import braces",
+      "options": [
+        "SyntaxError: not a chance",
+        "It enables C-style blocks.",
+        "ImportError: no module named braces",
+        "It works only in Python 2."
+      ],
+      "answerIndex": 0,
+      "explanation": "This is a deliberately cheeky easter egg in CPython's future handling."
+    },
+    {
+      "id": "barry-as-flufl",
+      "sourceSection": "Let's meet Friendly Language Uncle For Life",
+      "difficulty": "spicy",
+      "tag": "easter egg",
+      "question": "After `from __future__ import barry_as_FLUFL`, which inequality operator is the joke?",
+      "code": "from __future__ import barry_as_FLUFL",
+      "options": [
+        "`<>` becomes the accepted inequality spelling in that context.",
+        "`!=` becomes faster but unchanged.",
+        "`!==` becomes valid Python.",
+        "`not ==` becomes valid syntax."
+      ],
+      "answerIndex": 0,
+      "explanation": "The April Fool's FLUFL future import revives the old diamond operator in specific contexts."
+    },
+    {
+      "id": "loop-else",
+      "sourceSection": "Yes, it exists!",
+      "difficulty": "classic",
+      "tag": "control flow",
+      "question": "When does a loop's `else` block run?",
+      "code": "for num in values:\n    if num == target:\n        break\nelse:\n    print(\"not found\")",
+      "options": [
+        "When the loop finishes without hitting break.",
+        "Only when the iterable is empty.",
+        "After every loop, even if break runs.",
+        "Only when an exception is raised."
+      ],
+      "answerIndex": 0,
+      "explanation": "A loop else is basically a no-break clause."
+    },
+    {
+      "id": "try-else",
+      "sourceSection": "Yes, it exists!",
+      "difficulty": "classic",
+      "tag": "control flow",
+      "question": "When does a `try` statement's `else` block run?",
+      "code": "try:\n    risky()\nexcept Exception:\n    handle()\nelse:\n    celebrate()",
+      "options": [
+        "When the try block completes without an exception.",
+        "When any except block catches an exception.",
+        "Before the try block begins.",
+        "Only if finally is missing."
+      ],
+      "answerIndex": 0,
+      "explanation": "The try-else block is a completion clause for successful try execution."
+    },
+    {
+      "id": "ellipsis",
+      "sourceSection": "Ellipsis",
+      "difficulty": "warm-up",
+      "tag": "builtins",
+      "question": "What is `...` in Python?",
+      "code": "... is Ellipsis",
+      "options": [
+        "True; it is the built-in Ellipsis object.",
+        "False; it is syntax only.",
+        "SyntaxError outside slices.",
+        "It expands to three None values."
+      ],
+      "answerIndex": 0,
+      "explanation": "`Ellipsis` is a globally available built-in object, and `...` refers to it."
+    },
+    {
+      "id": "hash-infinity",
+      "sourceSection": "Inpinity",
+      "difficulty": "spicy",
+      "tag": "hashing",
+      "question": "In Python 3, what memorable value is used for the hash of positive infinity?",
+      "code": "hash(float(\"inf\"))",
+      "options": [
+        "314159",
+        "271828",
+        "0",
+        "Infinity cannot be hashed."
+      ],
+      "answerIndex": 0,
+      "explanation": "Positive infinity hashes to 314159 in Python 3; negative infinity gets the negative counterpart."
+    },
+    {
+      "id": "name-mangling",
+      "sourceSection": "Let's mangle",
+      "difficulty": "mean",
+      "tag": "classes",
+      "question": "How can you access this attribute from outside the instance?",
+      "code": "class Yo:\n    def __init__(self):\n        self.__honey = True",
+      "options": [
+        "Yo()._Yo__honey",
+        "Yo().__honey",
+        "Yo().honey",
+        "Yo().__Yo_honey"
+      ],
+      "answerIndex": 0,
+      "explanation": "Double-leading names are name-mangled with the class name prefix to reduce accidental collisions."
+    },
+    {
+      "id": "dunder-not-mangled",
+      "sourceSection": "Let's mangle",
+      "difficulty": "mean",
+      "tag": "classes",
+      "question": "Why is `__honey__` not accessed as `_Yo__honey__`?",
+      "code": "class Yo:\n    def __init__(self):\n        self.__honey__ = True",
+      "options": [
+        "Names ending with double underscores are excluded from name mangling.",
+        "All names with four underscores are private to C only.",
+        "Only methods can be mangled.",
+        "The attribute is deleted during initialization."
+      ],
+      "answerIndex": 0,
+      "explanation": "Name mangling applies to double-leading names that do not end with double underscores."
+    },
+    {
+      "id": "cyrillic-e",
+      "sourceSection": "Skipping lines?",
+      "difficulty": "spicy",
+      "tag": "unicode",
+      "question": "Why can this print 11?",
+      "code": "value = 11\nvaluе = 32\nvalue",
+      "options": [
+        "The second name can contain a Cyrillic character that looks like Latin e.",
+        "Python ignores assignments on the second line.",
+        "Variable names are case-insensitive.",
+        "The value 32 is too large for identifiers."
+      ],
+      "answerIndex": 0,
+      "explanation": "Some Unicode characters look identical to Latin letters but are different code points."
+    },
+    {
+      "id": "numpy-empty-teleport",
+      "sourceSection": "Teleportation",
+      "difficulty": "nightmare",
+      "tag": "memory",
+      "question": "What is the non-magical explanation for the NumPy teleportation trick?",
+      "code": "np.array([float(x)])\nnp.empty((), dtype=np.float).tolist()",
+      "options": [
+        "np.empty can reuse uninitialized memory that recently held the old value.",
+        "NumPy stores every float in a global clipboard.",
+        "tolist() searches previous arrays by value.",
+        "The Python garbage collector predicts the next call."
+      ],
+      "answerIndex": 0,
+      "explanation": "`np.empty` does not initialize memory. Sometimes that memory still contains old data."
+    },
+    {
+      "id": "mixed-tabs-spaces",
+      "sourceSection": "Well, something is fishy...",
+      "difficulty": "spicy",
+      "tag": "indentation",
+      "question": "Why did the old Python 2 example `square(10)` return 10 instead of 100?",
+      "code": "def square(x):\n    sum_so_far = 0\n    for counter in range(x):\n        sum_so_far = sum_so_far + x\n\treturn sum_so_far",
+      "options": [
+        "A mixed tab changed the effective indentation.",
+        "range(10) only iterated once in Python 2.",
+        "Addition inside loops returned early.",
+        "Docstrings override return values."
+      ],
+      "answerIndex": 0,
+      "explanation": "Tabs expand to column positions, which can produce surprising indentation. Python 3 raises TabError for inconsistent use."
+    },
+    {
+      "id": "plus-equals-string-speed",
+      "sourceSection": "`+=` is faster",
+      "difficulty": "mean",
+      "tag": "performance",
+      "question": "Why can `s1 += s2 + s3` be much faster than `s1 = s1 + s2 + s3` for large strings?",
+      "code": "s1 = s1 + s2 + s3\ns1 += s2 + s3",
+      "options": [
+        "The `+=` path can avoid destroying and recopying the first string while building the result.",
+        "The `+` operator sorts strings alphabetically first.",
+        "`+=` converts strings into mutable lists forever.",
+        "`+` uses network calls for large strings."
+      ],
+      "answerIndex": 0,
+      "explanation": "CPython has optimizations around string concatenation; avoiding repeated copying can make a large difference."
+    },
+    {
+      "id": "giant-string-join",
+      "sourceSection": "Let's make a giant string!",
+      "difficulty": "classic",
+      "tag": "performance",
+      "question": "When content is already in an iterable, what is the usual best way to build one big string?",
+      "code": "parts = [\"xyz\"] * 10000",
+      "options": [
+        "\"\".join(parts)",
+        "Repeated `s = s + part` in a loop",
+        "Convert every part to bytes first",
+        "Use `sum(parts)`"
+      ],
+      "answerIndex": 0,
+      "explanation": "Joining an iterable avoids quadratic repeated string copying."
+    },
+    {
+      "id": "dict-lookup-slowdown",
+      "sourceSection": "Slowing down `dict` lookups",
+      "difficulty": "nightmare",
+      "tag": "dicts",
+      "question": "How can a failed lookup slow future string-key lookups in one dictionary instance?",
+      "code": "another_dict = {str(i): 1 for i in range(1_000_000)}\ntry:\n    another_dict[1]\nexcept KeyError:\n    pass",
+      "options": [
+        "Touching it with a non-string key switches that dict away from the specialized string-key lookup.",
+        "KeyError permanently sorts the dictionary.",
+        "The failed key is secretly inserted with value None.",
+        "All dictionaries globally slow down after one KeyError."
+      ],
+      "answerIndex": 0,
+      "explanation": "CPython has a fast path for all-string dictionaries. A non-string lookup can switch that instance to generic lookup."
+    },
+    {
+      "id": "instance-dict-bloat",
+      "sourceSection": "Bloating instance `dict`s",
+      "difficulty": "nightmare",
+      "tag": "memory",
+      "question": "What can disable CPython's key-sharing optimization for future instances?",
+      "code": "o1 = SomeClass()\ndel o1.some_attr1\no3 = SomeClass()",
+      "options": [
+        "Deleting an instance attribute can unshare/bloat instance dictionaries.",
+        "Reading an attribute twice.",
+        "Creating a second instance.",
+        "Using integers as attribute values."
+      ],
+      "answerIndex": 0,
+      "explanation": "Key-sharing dictionaries save memory for similar instances, but deletion and some resizes break the assumptions."
+    },
+    {
+      "id": "join-is-string-method",
+      "sourceSection": "Minor Ones",
+      "difficulty": "warm-up",
+      "tag": "strings",
+      "question": "Why is `join` a string method instead of a list method?",
+      "code": "\",\".join([\"a\", \"b\", \"c\"])",
+      "options": [
+        "The separator string owns the string-specific operation and can accept any iterable.",
+        "Lists cannot have methods in Python.",
+        "join was copied from JavaScript accidentally.",
+        "It only works on lists, despite the syntax."
+      ],
+      "answerIndex": 0,
+      "explanation": "Putting join on the separator string lets it work with lists, tuples, generators, and other iterables."
+    },
+    {
+      "id": "weird-valid-statements",
+      "sourceSection": "Minor Ones",
+      "difficulty": "spicy",
+      "tag": "syntax",
+      "question": "Which statement is valid Python?",
+      "code": "",
+      "options": [
+        "[] = ()",
+        "0 = []",
+        "class = object",
+        "return = 5"
+      ],
+      "answerIndex": 0,
+      "explanation": "`[] = ()` is valid empty-sequence unpacking. The other options assign to invalid targets or keywords."
+    },
+    {
+      "id": "character-index-forever",
+      "sourceSection": "Minor Ones",
+      "difficulty": "classic",
+      "tag": "strings",
+      "question": "Why is this valid?",
+      "code": "\"a\"[0][0][0][0]",
+      "options": [
+        "Python has no separate character type; indexing a one-character string returns a string.",
+        "Indexing stops after the first [0] and ignores the rest.",
+        "Strings become lists after indexing.",
+        "Only the letter a supports repeated indexing."
+      ],
+      "answerIndex": 0,
+      "explanation": "A single character is still a one-character string, so `[0]` can keep returning the same kind of object."
+    },
+    {
+      "id": "minus-minus-zero",
+      "sourceSection": "Minor Ones",
+      "difficulty": "spicy",
+      "tag": "syntax",
+      "question": "What does this evaluate to?",
+      "code": "3 --0-- 5 == 8",
+      "options": [
+        "True",
+        "False",
+        "SyntaxError",
+        "0"
+      ],
+      "answerIndex": 0,
+      "explanation": "The repeated minus signs parse as binary subtraction plus unary negation in a way that evaluates to 8."
+    }
+  ]
+}
